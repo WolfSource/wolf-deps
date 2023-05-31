@@ -1,0 +1,51 @@
+cmake_minimum_required(VERSION 3.8)
+
+project(msquic-dep)
+
+option(WDEPS_MSQUIC_SHARED "build shared if on or static if off" ${BUILD_SHARED_LIBS})
+option(WDEPS_MSQUIC_SAMPLES "build samples" ${WDEPS_SAMPLES})
+
+# set up PLATFORM to windows,android-arm64-v8a,etc directories.
+# set up SHARED_FILENAME/STATIC_FILENAME to the appropriate filename.
+if (WIN32)
+    set(PLATFORM windows)
+    set(SHARED_FILENAME msquic.dll)
+    set(STATIC_FILENAME msquic.lib)
+elseif(ANDROID)
+    if (${ANDROID_ABI} STREQUAL "arm64-v8a")
+        set(PLATFORM android-armeabi-v7a)
+    elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
+        set(PLATFORM android-armeabi-v7a)
+    elseif(${ANDROID_ABI} STREQUAL "x86_64")
+        set(PLATFORM android-x86_64)
+    else()
+        message(FATAL_ERROR "target android abi ${ANDROID_ABI} is not supported.")
+    endif()
+
+    set(SHARED_FILENAME libmsquic.so)
+    set(STATIC_FILENAME libmsquic.a)
+else()
+    message(FATAL_ERROR "target platform is not supported.")
+endif()
+
+if (WDEPS_MSQUIC_SHARED)
+    set(LIBRARY_TYPE SHARED)
+    set(LIBRARY_TYPE_DIR bin)
+    set(LIBRARY_FILENAME ${SHARED_FILENAME})
+else()
+    set(LIBRARY_TYPE STATIC)
+    set(LIBRARY_TYPE_DIR lib)
+    set(LIBRARY_FILENAME ${STATIC_FILENAME})
+endif()
+
+add_library(${PROJECT_NAME} ${LIBRARY_TYPE} IMPORTED)
+add_library(msquic::msquic ALIAS ${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Debug/${LIBRARY_FILENAME})
+set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Release/${LIBRARY_FILENAME})
+set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Release/${LIBRARY_FILENAME})
+
+if (WDEPS_MSQUIC_SAMPLES)
+    add_executable(${PROJECT_NAME}-sample samples/main.cpp)
+    target_link_libraries(${PROJECT_NAME}-sample PRIVATE msquic::msquic)
+endif()
