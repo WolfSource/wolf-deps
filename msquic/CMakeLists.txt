@@ -1,51 +1,37 @@
-cmake_minimum_required(VERSION 3.8)
-
-project(msquic-dep)
-
-option(WDEPS_MSQUIC_SHARED "build shared if on or static if off" ${BUILD_SHARED_LIBS})
-option(WDEPS_MSQUIC_SAMPLES "build samples" ${WDEPS_SAMPLES})
-
 # set up PLATFORM to windows,android-arm64-v8a,etc directories.
-# set up SHARED_FILENAME/STATIC_FILENAME to the appropriate filename.
+# set up LIBRARY_FILENAME to the appropriate filename.
 if (WIN32)
     set(PLATFORM windows)
-    set(SHARED_FILENAME msquic.dll)
-    set(STATIC_FILENAME msquic.lib)
+    set(LIBRARY_FILENAME msquic.dll)
 elseif(ANDROID)
-    if (${ANDROID_ABI} STREQUAL "arm64-v8a")
-        set(PLATFORM android-armeabi-v7a)
-    elseif(${ANDROID_ABI} STREQUAL "armeabi-v7a")
-        set(PLATFORM android-armeabi-v7a)
-    elseif(${ANDROID_ABI} STREQUAL "x86_64")
-        set(PLATFORM android-x86_64)
-    else()
+    set(SUPPORTED_ABIS arm64-v8a armeabi-v7a x86_64)
+    if (NOT ${ANDROID_ABI} IN_LIST SUPPORTED_ABIS)
         message(FATAL_ERROR "target android abi ${ANDROID_ABI} is not supported.")
     endif()
 
-    set(SHARED_FILENAME libmsquic.so)
-    set(STATIC_FILENAME libmsquic.a)
+    set(PLATFORM android-${ANDROID_ABI})
+    set(LIBRARY_FILENAME libmsquic.so)
 else()
     message(FATAL_ERROR "target platform is not supported.")
 endif()
 
-if (WDEPS_MSQUIC_SHARED)
-    set(LIBRARY_TYPE SHARED)
-    set(LIBRARY_TYPE_DIR bin)
-    set(LIBRARY_FILENAME ${SHARED_FILENAME})
-else()
-    set(LIBRARY_TYPE STATIC)
-    set(LIBRARY_TYPE_DIR lib)
-    set(LIBRARY_FILENAME ${STATIC_FILENAME})
-endif()
+add_library(wdeps-msquic SHARED IMPORTED GLOBAL)
+add_library(msquic::msquic ALIAS wdeps-msquic)
 
-add_library(${PROJECT_NAME} ${LIBRARY_TYPE} IMPORTED)
-add_library(msquic::msquic ALIAS ${PROJECT_NAME})
-target_include_directories(${PROJECT_NAME} INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
-set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Debug/${LIBRARY_FILENAME})
-set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Release/${LIBRARY_FILENAME})
-set_property(TARGET ${PROJECT_NAME} PROPERTY IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/${LIBRARY_TYPE_DIR}/${PLATFORM}/Release/${LIBRARY_FILENAME})
+target_include_directories(wdeps-msquic INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-if (WDEPS_MSQUIC_SAMPLES)
-    add_executable(${PROJECT_NAME}-sample samples/main.cpp)
-    target_link_libraries(${PROJECT_NAME}-sample PRIVATE msquic::msquic)
+set_target_properties(wdeps-msquic PROPERTIES
+    IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM}/Release/${LIBRARY_FILENAME}
+    IMPORTED_LOCATION_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM}/Debug/${LIBRARY_FILENAME}
+    IMPORTED_LOCATION_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/bin/${PLATFORM}/Release/${LIBRARY_FILENAME}
+    IMPORTED_CONFIGURATIONS "Release;Debug"
+)
+
+if (WIN32)
+    set_target_properties(wdeps-msquic PROPERTIES
+        IMPORTED_IMPLIB ${CMAKE_CURRENT_SOURCE_DIR}/lib/windows/Release/msquic.lib
+        IMPORTED_IMPLIB_DEBUG ${CMAKE_CURRENT_SOURCE_DIR}/lib/windows/Debug/msquic.lib
+        IMPORTED_IMPLIB_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/lib/windows/Release/msquic.lib
+    )
+    target_link_libraries(wdeps-msquic INTERFACE ws2_32 schannel ntdll)
 endif()
