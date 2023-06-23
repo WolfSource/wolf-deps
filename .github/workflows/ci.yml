@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main", "*-ci-*" ]
+  pull_request:
+    branches: [ "main" ]
+
+env:
+  ANDROID_ROOT: /usr/local/lib/android
+  ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+  NDK_VERSION: 23.2.8568313
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - preset: android-arm
+            os: ubuntu-latest
+            target: android
+          - preset: android-arm64
+            os: ubuntu-latest
+            target: android
+          - preset: linux-x64
+            os: ubuntu-latest
+            target: linux
+          - preset: windows-x64
+            os: windows-latest
+            target: windows
+    runs-on: ${{matrix.config.os}}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: System Dependencies
+      if: matrix.config.target == 'linux'
+      run: |
+        sudo apt-get update -y
+        sudo apt-get install cmake ninja-build -y
+
+    - uses: actions/setup-java@v1
+      if: matrix.config.target == 'android'
+      with:
+        java-version: "11.x"
+
+    - name: Configure NDK
+      if: matrix.config.target == 'android'
+      run: |
+        SDKMANAGER=${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager
+        echo "y" | $SDKMANAGER "ndk;$NDK_VERSION"
+        echo ANDROID_NDK_HOME=${ANDROID_SDK_ROOT}/ndk/${NDK_VERSION} >> $env:GITHUB_ENV
+
+    - name: Configure the Build
+      run: |
+        cmake -S . --preset ${{matrix.config.preset}}
+
+    - name: Build Debug
+      run: cmake --build --preset ${{matrix.config.preset}} --config Debug
+
+    - name: Build Release
+      run: cmake --build --preset ${{matrix.config.preset}} --config Release
