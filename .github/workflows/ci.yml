@@ -61,3 +61,18 @@ jobs:
 
     - name: Build Release
       run: cmake --build --preset ${{matrix.config.preset}} --config Release
+
+    - name: Run LLD on Tests Linux
+      if: matrix.config.target == 'linux'
+      run: |
+        find build/${{matrix.config.preset}}/tests -name '*-test' | xargs ldd || true
+
+    - name: Run LLD on Tests Windows
+      if: matrix.config.target == 'windows'
+      run: |
+        ldd build/${{matrix.config.preset}}/tests/**/*-test.exe
+
+    - name: Run Tests
+      if: matrix.config.target != 'android'
+      run: |
+        ctest --preset ${{matrix.config.preset}}

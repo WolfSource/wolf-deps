@@ -32,10 +32,7 @@
             "name": "linux-x64",
             "inherits": "base",
             "generator": "Ninja",
-            "architecture": { "value": "x64", "strategy": "external" },
-            "cacheVariables": {
-                "WDEPS_MSQUIC": "OFF"
-            }
+            "architecture": { "value": "x64", "strategy": "external" }
         },
         {
             "name": "base-android",
@@ -66,5 +63,15 @@
         { "name": "linux-x64", "configurePreset": "linux-x64" },
         { "name": "android-arm", "configurePreset": "android-arm" },
         { "name": "android-arm64", "configurePreset": "android-arm64" }
+    ],
+    "testPresets": [
+        {
+            "name": "base",
+            "hidden": true,
+            "output": {"outputOnFailure": true},
+            "configuration": "Debug"
+        },
+        { "name": "windows-x64", "inherits": "base", "configurePreset": "windows-x64" },
+        { "name": "linux-x64", "inherits": "base", "configurePreset": "linux-x64" }
     ]
 }
