@@ -38,6 +38,7 @@
             "name": "base-android",
             "hidden": true,
             "inherits": "base",
+            "generator": "Ninja",
             "cacheVariables": {
                 "ANDROID_NDK": "$env{ANDROID_NDK_HOME}",
                 "ANDROID_PLATFORM": "android-24",

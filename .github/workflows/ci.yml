@@ -35,7 +35,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: System Dependencies
-      if: matrix.config.target == 'linux'
+      if: runner.os == 'linux'
       run: |
         sudo apt-get update -y
         sudo apt-get install cmake ninja-build -y
