@@ -41,12 +41,12 @@ if (WIN32)
     add_ffmpeg_library_windows(swresample ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/swresample-4.dll ${CMAKE_CURRENT_SOURCE_DIR}/lib/win/swresample.lib)
     add_ffmpeg_library_windows(swscale    ${CMAKE_CURRENT_SOURCE_DIR}/bin/win/swscale-6.dll    ${CMAKE_CURRENT_SOURCE_DIR}/lib/win/swscale.lib)
 elseif(ANDROID)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/dav1d ${CMAKE_CURRENT_BINARY_DIR}/deps-dav1d)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/srt ${CMAKE_CURRENT_BINARY_DIR}/deps-srt)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/svt-av1 ${CMAKE_CURRENT_BINARY_DIR}/deps-svt-av1)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/vpx ${CMAKE_CURRENT_BINARY_DIR}/deps-vpx)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/x264 ${CMAKE_CURRENT_BINARY_DIR}/deps-x264)
-    add_subdirectory(${CMAKE_SOURCE_DIR}/openssl ${CMAKE_CURRENT_BINARY_DIR}/deps-openssl)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/dav1d ${CMAKE_CURRENT_BINARY_DIR}/deps-dav1d)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/srt ${CMAKE_CURRENT_BINARY_DIR}/deps-srt)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/svt-av1 ${CMAKE_CURRENT_BINARY_DIR}/deps-svt-av1)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/vpx ${CMAKE_CURRENT_BINARY_DIR}/deps-vpx)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/x264 ${CMAKE_CURRENT_BINARY_DIR}/deps-x264)
+    add_subdirectory(${PROJECT_SOURCE_DIR}/openssl ${CMAKE_CURRENT_BINARY_DIR}/deps-openssl)
 
     target_link_libraries(wdeps-ffmpeg-options INTERFACE
         dav1d::dav1d-static
