@@ -35,3 +35,7 @@ if (WIN32)
     )
     target_link_libraries(wdeps-msquic INTERFACE ws2_32 schannel ntdll)
 endif()
+
+if (MSVC)
+    target_link_options(wdeps-msquic INTERFACE /LTCG)
+endif()
