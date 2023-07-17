@@ -20,3 +20,11 @@ set_target_properties(wdeps-srt-static PROPERTIES
     IMPORTED_LOCATION ${CMAKE_CURRENT_SOURCE_DIR}/lib/android-${ANDROID_ABI}/libsrt.a
     IMPORTED_LOCATION_RELEASE ${CMAKE_CURRENT_SOURCE_DIR}/lib/android-${ANDROID_ABI}/libsrt.a
 )
+
+if (WDEPS_INSTALL)
+    install(
+        IMPORTED_RUNTIME_ARTIFACTS wdeps-srt
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+endif()
