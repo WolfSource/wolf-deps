@@ -9,8 +9,6 @@ if (ANDROID)
     endif()
 endif()
 
-include(GNUInstallDirs)
-
 add_library(wdeps-ffmpeg INTERFACE)
 add_library(ffmpeg::ffmpeg ALIAS wdeps-ffmpeg)
 
@@ -21,13 +19,6 @@ macro(add_ffmpeg_library LIBRARY_NAME LIBRARY_TYPE)
     add_library(wdeps-ffmpeg-${LIBRARY_NAME} ${LIBRARY_TYPE} IMPORTED GLOBAL)
     target_link_libraries(wdeps-ffmpeg-${LIBRARY_NAME} INTERFACE wdeps-ffmpeg-options)
     target_link_libraries(wdeps-ffmpeg INTERFACE wdeps-ffmpeg-${LIBRARY_NAME})
-    if (WDEPS_INSTALL AND NOT ${LIBRARY_TYPE} STREQUAL "STATIC")
-        install(
-            IMPORTED_RUNTIME_ARTIFACTS wdeps-ffmpeg-${LIBRARY_NAME}
-            RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-            LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
-        )
-    endif()
 endmacro()
 
 if (WIN32)
@@ -75,8 +66,4 @@ elseif(ANDROID)
     add_ffmpeg_library_android(swscale)
 
     target_link_libraries(wdeps-ffmpeg INTERFACE srt::srt)
-endif()
-
-if (WDEPS_INSTALL)
-    install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/include DESTINATION .)
 endif()
