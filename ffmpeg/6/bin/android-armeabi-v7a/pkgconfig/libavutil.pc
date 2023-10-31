@@ -1,0 +1,14 @@
+prefix=/home/simin/ffmpeg/FFmpeg/build-arm-release
+exec_prefix=${prefix}
+libdir=/home/simin/ffmpeg/FFmpeg/build-arm-release/lib
+includedir=/home/simin/ffmpeg/FFmpeg/build-arm-release/include
+
+Name: libavutil
+Description: FFmpeg utility library
+Version: 58.27.100
+Requires: 
+Requires.private: 
+Conflicts:
+Libs: -L${libdir}  -lavutil 
+Libs.private: -pthread -lm -latomic -landroid
+Cflags: -I${includedir}
