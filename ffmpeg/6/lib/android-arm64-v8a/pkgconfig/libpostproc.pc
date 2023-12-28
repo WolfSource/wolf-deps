@@ -1,0 +1,14 @@
+prefix=/home/simin/ffmpeg/FFmpeg/build-arm8-release
+exec_prefix=${prefix}
+libdir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/lib
+includedir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/include
+
+Name: libpostproc
+Description: FFmpeg postprocessing library
+Version: 57.2.100
+Requires: 
+Requires.private: libavutil >= 58.27.100
+Conflicts:
+Libs: -L${libdir}  -lpostproc 
+Libs.private: -lm -latomic
+Cflags: -I${includedir}

@@ -1,0 +1,14 @@
+prefix=/home/simin/ffmpeg/FFmpeg/build-arm8-release
+exec_prefix=${prefix}
+libdir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/lib
+includedir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/include
+
+Name: libswresample
+Description: FFmpeg audio resampling library
+Version: 4.11.100
+Requires: 
+Requires.private: libavutil >= 58.27.100
+Conflicts:
+Libs: -L${libdir}  -lswresample 
+Libs.private: -lm -latomic
+Cflags: -I${includedir}
