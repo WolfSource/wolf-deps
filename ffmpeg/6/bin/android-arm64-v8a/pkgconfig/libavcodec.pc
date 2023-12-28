@@ -1,0 +1,14 @@
+prefix=/home/simin/ffmpeg/FFmpeg/build-arm8-release
+exec_prefix=${prefix}
+libdir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/lib
+includedir=/home/simin/ffmpeg/FFmpeg/build-arm8-release/include
+
+Name: libavcodec
+Description: FFmpeg codec library
+Version: 60.27.100
+Requires: 
+Requires.private: libswresample >= 4.11.100, libavutil >= 58.27.100
+Conflicts:
+Libs: -L${libdir}  -lavcodec 
+Libs.private: -pthread -lm -latomic -lz
+Cflags: -I${includedir}
