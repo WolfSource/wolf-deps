@@ -1,0 +1,1 @@
+message(FATAL_ERROR "WOLF_STREAM_RIST is not implemented yet.")
